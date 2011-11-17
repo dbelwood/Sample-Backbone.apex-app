@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Model Metrics Project" basedir="." default="usage"
+	xmlns:salesforce="antlib:com.salesforce">
+	<property file="login.properties"/>
+	<property name="dir.build" location="." />
+	<property name="dir.build.salesforce" location="${dir.build}/force.com/src" />
+	<property name="dir.build.name" location="${dir.build.salesforce}/staticresources/assets.resource" />
+	<property name="dir.source" location="${dir.build}/public" />
+	
+	<!-- Imports -->
+	
+	<target name="usage">
+		<echo level="info">
+	This build supports the following targets:
+	compile             Compile all coffee files to js
+	deploy	     		Deploy local changes to dev org
+	    </echo>
+	</target>
+	
+	<target name="compile">
+		<apply executable="coffee" failonerror="true">
+  			<arg value="-c"/>
+  			<arg value="-o"/>
+  			<arg value="${dir.build}/public/js"/>
+  			<fileset dir="${dir.build}/coffee" includes="**/*.coffee"/>
+ 		</apply>
+	</target>
+
+	<target name="clean">
+    	<delete file="${dir.build.name}"/>
+  	</target>
+
+  	<target name="presetup">
+  		<condition property="packageDNE">
+  			<not>
+  				<available file="${dir.build.salesforce}/package.xml"/>
+  			</not>
+  		</condition>
+  	</target>
+
+  	<target name="setup" depends="presetup" if="packageDNE">
+  		<touch file="${dir.build.salesforce}/package.xml" mkdirs="true"/>
+  		<echo file="${dir.build.salesforce}/package.xml"><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+  		<Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+			<types>
+		  		<members>assets.resource</members>
+		  		<name>StaticResource</name>
+		  	</types>
+		  	<version>23.0</version>
+		</Package>]]>
+		</echo>
+  	</target>
+
+  	<target name="package" depends="compile, clean, setup">
+  		<zip zipfile="${dir.build.name}">
+      		<fileset dir="${dir.source}"/>
+    	</zip>
+  	</target>
+	
+	<target name="deploy" depends="package">
+		<deploy username="${env.developer.login}" password="${env.developer.password}${env.developer.token}" serverurl="${env.developer.url}" />
+	</target>
+
+	<target name="retrieve">
+		<retrieve username="${env.developer.login}" password="${env.developer.password}${env.developer.token}" serverurl="${env.developer.url}" />
+	</target>
+
+	<macrodef name="deploy">
+		<attribute name="username"/>
+		<attribute name="password"/>
+		<attribute name="serverurl"/>
+		<sequential>
+		<echo level="info">deploying to @{serverurl} from directory ${dir.build.salesforce}
+		        as user @{username} with password @{password}
+		        and running all Apex tests
+		</echo>
+		<salesforce:deploy username="@{username}" password="@{password}" serverurl="@{serverurl}" deployRoot="${dir.build.salesforce}"
+			runAllTests="false" maxPoll="1000" logtype="Debugonly"/>
+		</sequential>
+	</macrodef>
+	<macrodef name="retrieve">
+		<attribute name="username"/>
+		<attribute name="password"/>
+		<attribute name="serverurl"/>
+		<sequential>
+		<echo level="info">retrieving from @{serverurl} to directory @{fromdir}
+		        as user @{username} with password @{password}
+		</echo>
+		<salesforce:retrieve username="@{username}" password="@{password}" serverurl="@{serverurl}" retrieveTarget="${dir.build.salesforce}" unpackaged="${dir.build.salesforce}/package.xml"/>
+		</sequential>
+	</macrodef>
+</project>

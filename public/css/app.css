@@ -1,0 +1,24 @@
+.clear {
+	clear: both;
+}
+
+div#accountList {
+	float: left;
+	height: 300px;
+	overflow: scroll;
+	width: 50%;
+}
+
+ul#accounts {
+	list-style-type: none;
+}
+
+div.account {
+	border: 1px solid black;
+	cursor: pointer;
+}
+
+div#account {
+	width: 50%;
+	float: left;
+}
