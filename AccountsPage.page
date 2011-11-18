@@ -1,0 +1,93 @@
+<apex:page >
+  <div id="tabs">
+  	<ul>
+  	  <li><a href="#home">Accounts</a></li>
+  	  <li><a href="#search">Search</a></li>
+  	</ul>
+  	<div id="home">
+  		<div id="accountList">
+      		<ul id="accounts"></ul>
+      	</div>
+      	<div id="account"></div>
+      	<div class="clear"></div>
+      	<div id="toolbar">
+  	  		<button id="newAccount">New Account</button>
+  	  	</div>
+  	</div>
+  	<div id="search">
+  		<div id="search_parameters">
+			<h1>Search</h1>
+			<form>
+				<label for="name">Name</label>&nbsp;<input type="text" name="name"/><br/>
+				<table>
+					<thead>
+						<th>Name</th><th>&nbsp;</th>
+					</thead>
+					<tbody id="industry_rows"></tbody>
+				</table>
+				<button id="add_new_industry">Add New</button>
+			</form>
+		</div>
+  	</div>
+  </div>
+  <!-- Template -->
+  <script id="account_row" type="text/x-handlebars-template">
+  	<div class="account">
+          <h2>{{Name}}</h2>
+      </div>
+  </script>
+  <script id="new_account_template" type="text/x-handlebars-template">
+  	<div>		
+		<p><label for="Name">Name</label></p>
+		<p><input id="Name" type="text"/></p>
+		<p><label for="BillingStreet">Billing Street</label></p>
+		<p><input id="BillingStreet" type="text"/></p>
+		<p><label for="Industry">Industry</label></p>
+		<p><input id="Industry" type="text"/></p>
+		<p><label for="Phone">Phone</label></p>
+		<p><input id="Phone" type="text"/></p>
+		<p><label for="Fax">Fax</label></p>
+		<p><input id="Fax" type="text"/></p>
+	</div>
+  </script>
+  <script id="account_template" type="text/x-handlebars-template">
+	<div class="account_detail">
+		<h1>{{Name}}</h1>
+		<table>
+			<tbody>
+				<tr>
+					<td><b>Billing Address</b><td colspan="3">{{BillingStreet}}</td>
+				</tr>
+				<tr>
+					<td><b>Industry</b><td colspan="3">{{Industry}}</td>
+				</tr>
+				<tr>
+					<td><b>Phone</b><td>{{Phone}}</td><td><b>Fax</b><td>{{Fax}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+  </script>
+  <script id="industry_row" type="text/x-handlebars-template">
+	<td>{{Name}}</td><td><a href="#">Del</a></td>
+  </script>
+  <!-- Styles -->
+  <apex:styleSheet value="{!URLFOR($Resource.assets, 'css/app.css')}"/>
+  <apex:styleSheet value="{!URLFOR($Resource.assets, 'css/ui-lightness/jquery-ui-1.8.16.custom.css')}"/>
+
+  <!-- Libraries -->
+  <apex:includeScript value="{!URLFOR($Resource.assets, 'js/jquery-1.6.2.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, 'js/jquery-ui-1.8.16.custom.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/json2.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/underscore-min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/backbone-min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/handlebars.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/backbone.salesforce.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/backbone-ext.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/backbone.modelbinding.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/prettyprint.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.assets, '/js/app.js')}"/>
+  <script type='text/javascript'>
+	window.App = new this.App("{!$Api.Session_ID}");
+  </script>
+</apex:page>
